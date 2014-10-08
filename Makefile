@@ -1,8 +1,10 @@
-CC = /home/eirik/workspace/os/tools/gcc/bin/i586-elf-gcc
-AS =  /home/eirik/workspace/os/tools/gcc/bin/i586-elf-as
+BASEDIR = $(shell echo $(CURDIR)|sed 's/ /\\ /g')
+TOOLSDIR = $(BASEDIR)/tools
+CC = $(TOOLSDIR)/gcc/bin/i586-elf-gcc
+AS = $(TOOLSDIR)/gcc/bin/i586-elf-as
 
 # Do everything by default if it isn't done already
-all: boot kernel link
+all: link
 
 kernel: objfolder
 	$(CC) -c src/kernel.c -o obj/kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
