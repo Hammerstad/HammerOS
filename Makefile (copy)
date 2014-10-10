@@ -1,10 +1,10 @@
 BASEDIR = $(shell echo $(CURDIR)|sed 's/ /\\ /g')
-CROSSDIR = /home/hammerstad/workspace/gcc-cross
-CC = $(CROSSDIR)/bin/i686-elf-gcc
-AS = $(CROSSDIR)/bin/i686-elf-as
+TOOLSDIR = $(BASEDIR)/tools
+CC = $(TOOLSDIR)/gcc/bin/i586-elf-gcc
+AS = $(TOOLSDIR)/gcc/bin/i586-elf-as
 
 # Do everything by default if it isn't done already
-all: run
+all: link
 
 kernel: objfolder
 	$(CC) -c src/kernel.c -o obj/kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
@@ -19,9 +19,6 @@ iso: link workfolder bin
 	cp bin/myos.bin work/boot/myos.bin
 	cp grub.cfg work/boot/grub/grub.cfg
 	grub-mkrescue -o bin/myos.iso work
-
-run: link
-	qemu-system-i386 -kernel bin/myos.bin
 	
 clean:
 	if [ -e obj ]; then rm -r obj; fi

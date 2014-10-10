@@ -319,18 +319,18 @@ build_target() {
 	check_error $? "Change directory failed."
 	
 	change_title "binutils: configure (${PLATFORM})"
-	CFLAGS=-Wno-error ./configure \
-		"--target=${TARGET}" \
-		"--prefix=${PREFIX}" "--program-prefix=${TARGET}-" \
-		--disable-nls --disable-werror
+	#CFLAGS=-Wno-error ./configure \
+	#	"--target=${TARGET}" \
+	#	"--prefix=${PREFIX}" "--program-prefix=${TARGET}-" \
+	#	--disable-nls --disable-werror --with-sysroot
 	check_error $? "Error configuring binutils."
 	
 	change_title "binutils: make (${PLATFORM})"
-	make all
+	#make #all
 	check_error $? "Error compiling binutils."
 	
 	change_title "binutils: install (${PLATFORM})"
-	make install
+	#make install
 	check_error $? "Error installing binutils."
 	
 	echo ">>> Processing GCC (${PLATFORM})"
@@ -338,40 +338,43 @@ build_target() {
 	check_error $? "Change directory failed."
 	
 	change_title "GCC: configure (${PLATFORM})"
-	PATH="$PATH:${INSTALL_DIR}/${PREFIX}/bin" "${GCCDIR}/configure" \
-		"--target=${TARGET}" \
-		"--prefix=${PREFIX}" "--program-prefix=${TARGET}-" \
-		--with-gnu-as --with-gnu-ld --disable-nls --disable-threads \
-		--enable-languages=c,objc,c++,obj-c++ \
-		--disable-multilib --disable-libgcj --without-headers \
-		--disable-shared --enable-lto --disable-werror
+	#PATH="$PATH:${INSTALL_DIR}/${PREFIX}/bin" "${GCCDIR}/configure" \
+	#	"--target=${TARGET}" \
+	#	"--prefix=${PREFIX}" "--program-prefix=${TARGET}-" \
+	#	--disable-nls --enable-languages=c,c++ --without-headers
+		#--with-gnu-as --with-gnu-ld --disable-nls --disable-threads \
+		#--enable-languages=c,objc,c++,obj-c++ \
+		#--disable-multilib --disable-libgcj --without-headers \
+		#--disable-shared --enable-lto --disable-werror
 	check_error $? "Error configuring GCC."
 	
 	change_title "GCC: make (${PLATFORM})"
-	PATH="${PATH}:${PREFIX}/bin:${INSTALL_DIR}/${PREFIX}/bin" make all-gcc
+	#PATH="${PATH}:${PREFIX}/bin:${INSTALL_DIR}/${PREFIX}/bin" make all-gcc
 	check_error $? "Error compiling GCC."
 	
 	change_title "GCC: install (${PLATFORM})"
-	PATH="${PATH}:${PREFIX}/bin" make install-gcc
+	#PATH="${PATH}:${PREFIX}/bin" make all-target-libgcc
+	#PATH="${PATH}:${PREFIX}/bin" make install-gcc
+	#PATH="${PATH}:${PREFIX}/bin" make install-target-libgcc
 	check_error $? "Error installing GCC."
 	
-	echo ">>> Processing GDB (${PLATFORM})"
-	cd "${GDBDIR}"
-	check_error $? "Change directory failed."
+	#echo ">>> Processing GDB (${PLATFORM})"
+	#cd "${GDBDIR}"
+	#check_error $? "Change directory failed."
 	
-	change_title "GDB: configure (${PLATFORM})"
-	PATH="$PATH:${INSTALL_DIR}/${PREFIX}/bin" ./configure \
-		"--target=${TARGET}" \
-		"--prefix=${PREFIX}" "--program-prefix=${TARGET}-"
-	check_error $? "Error configuring GDB."
+	#change_title "GDB: configure (${PLATFORM})"
+	#PATH="$PATH:${INSTALL_DIR}/${PREFIX}/bin" ./configure \
+	#	"--target=${TARGET}" \
+	#	"--prefix=${PREFIX}" "--program-prefix=${TARGET}-"
+	#check_error $? "Error configuring GDB."
 	
-	change_title "GDB: make (${PLATFORM})"
-	PATH="${PATH}:${PREFIX}/bin:${INSTALL_DIR}/${PREFIX}/bin" make all
-	check_error $? "Error compiling GDB."
+	#change_title "GDB: make (${PLATFORM})"
+	#PATH="${PATH}:${PREFIX}/bin:${INSTALL_DIR}/${PREFIX}/bin" make all
+	c#heck_error $? "Error compiling GDB."
 	
-	change_title "GDB: make (${PLATFORM})"
-	PATH="${PATH}:${PREFIX}/bin" make install
-	check_error $? "Error installing GDB."
+	#change_title "GDB: make (${PLATFORM})"
+	#PATH="${PATH}:${PREFIX}/bin" make install
+	#check_error $? "Error installing GDB."
 	
 	cd "${BASEDIR}"
 	check_error $? "Change directory failed."
