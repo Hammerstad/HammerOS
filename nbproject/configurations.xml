@@ -3,6 +3,8 @@
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df root="." name="0">
       <df name="src">
+        <in>display.c</in>
+        <in>display.h</in>
         <in>kernel.c</in>
       </df>
     </df>
@@ -35,6 +37,10 @@
           <executablePath></executablePath>
         </makeTool>
       </makefileType>
+      <item path="src/display.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/display.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/kernel.c" ex="false" tool="0" flavor2="2">
       </item>
     </conf>

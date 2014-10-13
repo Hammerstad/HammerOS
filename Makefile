@@ -8,12 +8,13 @@ all: run
 
 kernel: objfolder
 	$(CC) -c src/kernel.c -o obj/kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+	$(CC) -c src/display.c -o obj/display.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 
 boot: objfolder
 	$(AS) src/boot.s -o obj/boot.o
 
 link: kernel boot binfolder
-	$(CC) -T src/linker.ld -o bin/myos.bin -ffreestanding -O2 -nostdlib obj/boot.o obj/kernel.o -lgcc
+	$(CC) -T src/linker.ld -o bin/myos.bin -ffreestanding -O2 -nostdlib obj/boot.o obj/kernel.o obj/display.o -lgcc
 
 iso: link workfolder bin
 	cp bin/myos.bin work/boot/myos.bin

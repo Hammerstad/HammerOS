@@ -8,6 +8,8 @@
       </df>
       <df name="src">
         <in>boot.s</in>
+        <in>display.c</in>
+        <in>display.h</in>
         <in>kernel.c</in>
       </df>
       <df name="tools">
