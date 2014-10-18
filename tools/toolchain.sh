@@ -1,58 +1,13 @@
 BINUTILS_VERSION="2.23.1"
 BINUTILS_RELEASE=""
-BINUTILS_PATCHES="toolchain-binutils-2.23.1.patch"
 GCC_VERSION="4.8.1"
-GCC_PATCHES="toolchain-gcc-4.8.1-targets.patch toolchain-gcc-4.8.1-headers.patch"
-GDB_VERSION="7.6.1"
-GDB_PATCHES="toolchain-gdb-7.6.1.patch"
 
 BASEDIR="`pwd`"
 SRCDIR="$(readlink -f $(dirname "$0"))"
 BINUTILS="binutils-${BINUTILS_VERSION}${BINUTILS_RELEASE}.tar.bz2"
 GCC="gcc-${GCC_VERSION}.tar.bz2"
-GDB="gdb-${GDB_VERSION}.tar.bz2"
 
-check_dependency() {
-	DEPENDENCY="$1"
-	HEADER="$2"
-	BODY="$3"
-	
-	FNAME="/tmp/conftest-$$"
-	
-	echo "#include ${HEADER}" > "${FNAME}.c"
-	echo >> "${FNAME}.c"
-	echo "int main()" >> "${FNAME}.c"
-	echo "{" >> "${FNAME}.c"
-	echo "${BODY}" >> "${FNAME}.c"
-	echo "	return 0;" >> "${FNAME}.c"
-	echo "}" >> "${FNAME}.c"
-	
-	cc -c -o "${FNAME}.o" "${FNAME}.c" 2> "${FNAME}.log"
-	RC="$?"
-	
-	if [ "$RC" -ne "0" ] ; then
-		echo " ${DEPENDENCY} not found, too old or compiler error."
-		echo " Please recheck manually the source file \"${FNAME}.c\"."
-		echo " The compilation of the toolchain is probably going to fail,"
-		echo " you have been warned."
-		echo
-		echo " ===== Compiler output ====="
-		cat "${FNAME}.log"
-		echo " ==========================="
-		echo
-	else
-		echo " ${DEPENDENCY} found"
-		rm -f "${FNAME}.log" "${FNAME}.o" "${FNAME}.c"
-	fi
-}
-
-check_dependecies() {
-	echo ">>> Basic dependency check"
-	check_dependency "GMP" "<gmp.h>" "${GMP_MAIN}"
-	check_dependency "MPFR" "<mpfr.h>" "${MPFR_MAIN}"
-	check_dependency "MPC" "<mpc.h>" "${MPC_MAIN}"
-	echo
-}
+DEPENDENCIES="gcc make bison flex libgmp3-dev libmpfr-dev libmpc-dev texinfo"
 
 check_error() {
 	if [ "$1" -ne "0" ]; then
@@ -85,6 +40,9 @@ show_usage() {
 	echo "Possible target platforms are:"
 	echo " ia32       IA-32 (x86, i386)"
 	echo " all        build all targets"
+	echo " cleandl    cleans the downloaded files"
+	echo " cleanwork  cleans the work directory"
+	echo " cleanall   cleans the work directory and downloaded files"
 	echo
 	echo "The toolchain is installed into directory specified by the"
 	echo "CROSS_PREFIX environment variable. If the variable is not"
@@ -98,22 +56,6 @@ change_title() {
 	echo -en "\e]0;$1\a"
 }
 
-show_countdown() {
-	TM="$1"
-	
-	if [ "${TM}" -eq 0 ] ; then
-		echo
-		return 0
-	fi
-	
-	echo -n "${TM} "
-	change_title "${TM}"
-	sleep 1
-	
-	TM="`expr "${TM}" - 1`"
-	show_countdown "${TM}"
-}
-
 show_dependencies() {
 	echo "IMPORTANT NOTICE:"
 	echo
@@ -124,21 +66,47 @@ show_dependencies() {
 	echo "system. Otherwise the compilation process might fail after"
 	echo "a few seconds or minutes."
 	echo
-	echo " - SED, AWK, Flex, Bison, gzip, bzip2, Bourne Shell"
-	echo " - gettext, zlib, Texinfo, libelf, libgomp"
-	echo " - terminfo"
-	echo " - GNU Multiple Precision Library (GMP)"
+	echo " - GCC"
 	echo " - GNU Make"
-	echo " - GNU tar"
-	echo " - GNU Coreutils"
-	echo " - GNU Sharutils"
-	echo " - MPFR"
-	echo " - MPC"
-	echo " - Parma Polyhedra Library (PPL)"
-	echo " - ClooG-PPL"
-	echo " - native C compiler, assembler and linker"
-	echo " - native C library with headers"
+	echo " - GNU Bison"
+	echo " - Flex"
+	echo " - GNU GMP"
+	echo " - GNU MPFR"
+	echo " - GNU MPC"
+	echo " - Tar"
+	echo " - Texinfo"
 	echo
+}
+
+install(){
+    PACKAGE=$1
+    sudo apt-get install -y $1 > /dev/null
+    if [[ $? > 0 ]]
+    then
+        echo "Unable to install $PACKAGE. Exiting."
+        exit 1
+    else
+        echo "$PACKAGE installed successfully."
+    fi
+}
+
+install_dependencies(){
+    for PACKAGE in $DEPENDENCIES
+    do
+        PACKAGE_INSTALLED=$(dpkg-query -Wf '${db:Status-abbrev}' "$PACKAGE" 2>/dev/null | grep '^ii')
+        if [[ "" == $PACKAGE_INSTALLED ]]
+        then
+            echo -e " >>> $PACKAGE not found. Install? (y/n) \c"
+            read
+            if [[ "$REPLY" == "y" ]]
+            then
+                install $PACKAGE
+            fi
+        else
+            echo ">>> $PACKAGE already installed. Moving on..."
+        fi
+    done
+    echo
 }
 
 download_fetch() {
@@ -172,7 +140,7 @@ cleanup_dir() {
 	if [ -d "${DIR}" ]; then
 		change_title "Removing ${DIR}"
 		echo " >>> Removing ${DIR}"
-		rm -fr "${DIR}"
+		rm -rf "${DIR}"
 	fi
 }
 
@@ -226,36 +194,21 @@ unpack_tarball() {
 	check_error $? "Error unpacking ${DESC}."
 }
 
-patch_sources() {
-	PATCH_FILE="$1"
-	PATCH_STRIP="$2"
-	DESC="$3"
-	
-	change_title "Patching ${DESC}"
-	echo " >>> Patching ${DESC} with ${PATCH_FILE}"
-	
-	patch -t "-p${PATCH_STRIP}" <"$PATCH_FILE"
-	check_error $? "Error patching ${DESC}."
-}
-
 prepare() {
 	show_dependencies
-	check_dependecies
-	show_countdown 1
+    install_dependencies
 	
 	BINUTILS_SOURCE="ftp://ftp.gnu.org/gnu/binutils/"
 	GCC_SOURCE="ftp://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/"
-	GDB_SOURCE="ftp://ftp.gnu.org/gnu/gdb/"
 	
 	download_fetch "${BINUTILS_SOURCE}" "${BINUTILS}" "33adb18c3048d057ac58d07a3f1adb38"
 	download_fetch "${GCC_SOURCE}" "${GCC}" "3b2386c114cd74185aa3754b58a79304"
-	download_fetch "${GDB_SOURCE}" "${GDB}" "fbc4dab4181e6e9937075b43a4ce2732"
 }
 
 set_target_from_platform() {
 	case "$1" in
 		"ia32")
-			LINUX_TARGET="i686-pc-linux-gnu"
+			TARGET="i686-elf"
 			;;
 		*)
 			check_error 1 "No target known for $1."
@@ -263,17 +216,61 @@ set_target_from_platform() {
 	esac
 }
 
+build_binutils(){
+	echo ">>> Processing binutils (${PLATFORM})"
+	create_dir $BINUTILSBUILDDIR "Binutils build directory"
+	cd $BINUTILSBUILDDIR
+	check_error $? "Change directory failed."
+	
+	change_title "binutils: configure (${PLATFORM})"
+	${BINUTILSDIR}/configure --target=${TARGET} --prefix=${PREFIX} --disable-nls --disable-werror --with-sysroot
+	check_error $? "Error configuring binutils."
+	
+	change_title "binutils: make (${PLATFORM})"
+	make
+	check_error $? "Error compiling binutils."
+	
+	change_title "binutils: install (${PLATFORM})"
+	make install
+	check_error $? "Error installing binutils."
+}
+
+build_gcc(){
+    echo ">>> Processing GCC (${PLATFORM})"
+	create_dir "${GCCBUILDDIR}" "GCC build directory"
+	cd "${GCCBUILDDIR}"
+	check_error $? "Change directory failed."
+	
+	change_title "GCC: configure (${PLATFORM})"
+	${GCCDIR}/configure --target=${TARGET} --prefix=${PREFIX} --disable-nls --enable-languages=c,c++ --without-headers
+	check_error $? "Error configuring GCC."
+	
+	change_title "GCC: make all-gcc (${PLATFORM})"
+	make all-gcc
+	check_error $? "Error compiling GCC."
+	
+	change_title "GCC: make all-target-libgcc (${PLATFORM})"
+	make all-target-libgcc
+	check_error $? "Error compiling LIBGCC."
+	
+	change_title "GCC: install-gcc (${PLATFORM})"
+	make install-gcc
+	check_error $? "Error installing GCC."
+	
+	change_title "GCC: install-target-libgcc (${PLATFORM})"
+    make install-target-libgcc
+	check_error $? "Error installing LIBGCC."
+}
+
 build_target() {
 	PLATFORM="$1"
-	# This sets the *_TARGET variables
 	set_target_from_platform "$PLATFORM"
-	TARGET="$LINUX_TARGET"
 	
-	WORKDIR="${BASEDIR}/${PLATFORM}"
+	WORKDIR="${BASEDIR}/work/${PLATFORM}"
 	BINUTILSDIR="${WORKDIR}/binutils-${BINUTILS_VERSION}"
+    BINUTILSBUILDDIR="${WORKDIR}/build-binutils"
 	GCCDIR="${WORKDIR}/gcc-${GCC_VERSION}"
-	OBJDIR="${WORKDIR}/gcc-obj"
-	GDBDIR="${WORKDIR}/gdb-${GDB_VERSION}"
+	GCCBUILDDIR="${WORKDIR}/build-gcc"
 	
 	if [ -z "${CROSS_PREFIX}" ] ; then
 		CROSS_PREFIX="/usr/local/cross"
@@ -284,14 +281,8 @@ build_target() {
 	echo ">>> Downloading tarballs"
 	source_check "${BASEDIR}/${BINUTILS}"
 	source_check "${BASEDIR}/${GCC}"
-	source_check "${BASEDIR}/${GDB}"
 	
-	echo ">>> Removing previous content"
-	$REAL_INSTALL && cleanup_dir "${PREFIX}"
-	cleanup_dir "${WORKDIR}"
-	
-	$REAL_INSTALL && create_dir "${PREFIX}" "destination directory"
-	create_dir "${OBJDIR}" "GCC object directory"
+	create_dir "${PREFIX}" "destination directory"
 	
 	check_dirs "${PREFIX}" "${WORKDIR}"
 	
@@ -301,86 +292,13 @@ build_target() {
 	
 	unpack_tarball "${BASEDIR}/${BINUTILS}" "binutils"
 	unpack_tarball "${BASEDIR}/${GCC}" "GCC"
-	unpack_tarball "${BASEDIR}/${GDB}" "GDB"
+
+    build_binutils	
+    build_gcc
 	
-	echo ">>> Applying patches"
-	for p in $BINUTILS_PATCHES; do
-		patch_sources "${SRCDIR}/${p}" 0 "binutils"
-	done
-	for p in $GCC_PATCHES; do
-		patch_sources "${SRCDIR}/${p}" 0 "GCC"
-	done
-	for p in $GDB_PATCHES; do
-		patch_sources "${SRCDIR}/${p}" 0 "GDB"
-	done
-	
-	echo ">>> Processing binutils (${PLATFORM})"
-	cd "${BINUTILSDIR}"
-	check_error $? "Change directory failed."
-	
-	change_title "binutils: configure (${PLATFORM})"
-	#CFLAGS=-Wno-error ./configure \
-	#	"--target=${TARGET}" \
-	#	"--prefix=${PREFIX}" "--program-prefix=${TARGET}-" \
-	#	--disable-nls --disable-werror --with-sysroot
-	check_error $? "Error configuring binutils."
-	
-	change_title "binutils: make (${PLATFORM})"
-	#make #all
-	check_error $? "Error compiling binutils."
-	
-	change_title "binutils: install (${PLATFORM})"
-	#make install
-	check_error $? "Error installing binutils."
-	
-	echo ">>> Processing GCC (${PLATFORM})"
-	cd "${OBJDIR}"
-	check_error $? "Change directory failed."
-	
-	change_title "GCC: configure (${PLATFORM})"
-	#PATH="$PATH:${INSTALL_DIR}/${PREFIX}/bin" "${GCCDIR}/configure" \
-	#	"--target=${TARGET}" \
-	#	"--prefix=${PREFIX}" "--program-prefix=${TARGET}-" \
-	#	--disable-nls --enable-languages=c,c++ --without-headers
-		#--with-gnu-as --with-gnu-ld --disable-nls --disable-threads \
-		#--enable-languages=c,objc,c++,obj-c++ \
-		#--disable-multilib --disable-libgcj --without-headers \
-		#--disable-shared --enable-lto --disable-werror
-	check_error $? "Error configuring GCC."
-	
-	change_title "GCC: make (${PLATFORM})"
-	#PATH="${PATH}:${PREFIX}/bin:${INSTALL_DIR}/${PREFIX}/bin" make all-gcc
-	check_error $? "Error compiling GCC."
-	
-	change_title "GCC: install (${PLATFORM})"
-	#PATH="${PATH}:${PREFIX}/bin" make all-target-libgcc
-	#PATH="${PATH}:${PREFIX}/bin" make install-gcc
-	#PATH="${PATH}:${PREFIX}/bin" make install-target-libgcc
-	check_error $? "Error installing GCC."
-	
-	#echo ">>> Processing GDB (${PLATFORM})"
-	#cd "${GDBDIR}"
-	#check_error $? "Change directory failed."
-	
-	#change_title "GDB: configure (${PLATFORM})"
-	#PATH="$PATH:${INSTALL_DIR}/${PREFIX}/bin" ./configure \
-	#	"--target=${TARGET}" \
-	#	"--prefix=${PREFIX}" "--program-prefix=${TARGET}-"
-	#check_error $? "Error configuring GDB."
-	
-	#change_title "GDB: make (${PLATFORM})"
-	#PATH="${PATH}:${PREFIX}/bin:${INSTALL_DIR}/${PREFIX}/bin" make all
-	c#heck_error $? "Error compiling GDB."
-	
-	#change_title "GDB: make (${PLATFORM})"
-	#PATH="${PATH}:${PREFIX}/bin" make install
-	#check_error $? "Error installing GDB."
 	
 	cd "${BASEDIR}"
 	check_error $? "Change directory failed."
-	
-	echo ">>> Cleaning up"
-	cleanup_dir "${WORKDIR}"
 	
 	echo
 	echo ">>> Cross-compiler for ${TARGET} installed."
@@ -409,6 +327,13 @@ case "$1" in
 		prepare
 		build_target "ia32"
 		;;
+    "cleandl")
+        #rm "${BASEDIR}/${BINUTILS}"
+        #rm "${BASEDIR}/${GCC}"
+        ;;
+    "cleanwork")
+        rm -rf "work"
+        ;;
 	*)
 		show_usage
 		;;

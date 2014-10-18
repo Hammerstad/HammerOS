@@ -14,15 +14,15 @@ boot: objfolder
 	$(AS) src/boot.s -o obj/boot.o
 
 link: kernel boot binfolder
-	$(CC) -T src/linker.ld -o bin/myos.bin -ffreestanding -O2 -nostdlib obj/boot.o obj/kernel.o obj/display.o -lgcc
+	$(CC) -T src/linker.ld -o bin/hameros.bin -ffreestanding -O2 -nostdlib obj/boot.o obj/kernel.o obj/display.o -lgcc
 
 iso: link workfolder bin
-	cp bin/myos.bin work/boot/myos.bin
+	cp bin/hammeros.bin work/boot/hammeros.bin
 	cp grub.cfg work/boot/grub/grub.cfg
-	grub-mkrescue -o bin/myos.iso work
+	grub-mkrescue -o bin/hammeros.iso work
 
 run: link
-	qemu-system-i386 -kernel bin/myos.bin
+	qemu-system-i386 -kernel bin/hammeros.bin
 	
 clean:
 	if [ -e obj ]; then rm -r obj; fi
