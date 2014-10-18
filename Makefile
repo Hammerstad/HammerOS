@@ -1,5 +1,5 @@
 BASEDIR = $(shell echo $(CURDIR)|sed 's/ /\\ /g')
-CROSSDIR = /home/hammerstad/workspace/gcc-cross
+CROSSDIR = /usr/local/cross/ia32/
 CC = $(CROSSDIR)/bin/i686-elf-gcc
 AS = $(CROSSDIR)/bin/i686-elf-as
 
@@ -14,7 +14,7 @@ boot: objfolder
 	$(AS) src/boot.s -o obj/boot.o
 
 link: kernel boot binfolder
-	$(CC) -T src/linker.ld -o bin/hameros.bin -ffreestanding -O2 -nostdlib obj/boot.o obj/kernel.o obj/display.o -lgcc
+	$(CC) -T src/linker.ld -o bin/hammeros.bin -ffreestanding -O2 -nostdlib obj/boot.o obj/kernel.o obj/display.o -lgcc
 
 iso: link workfolder bin
 	cp bin/hammeros.bin work/boot/hammeros.bin
