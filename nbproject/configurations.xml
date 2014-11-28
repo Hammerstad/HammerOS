@@ -5,7 +5,11 @@
       <df name="src">
         <in>display.c</in>
         <in>display.h</in>
+        <in>io.c</in>
+        <in>io.h</in>
         <in>kernel.c</in>
+        <in>string.c</in>
+        <in>string.h</in>
       </df>
     </df>
     <logicalFolder name="ExternalFiles"
@@ -41,7 +45,15 @@
       </item>
       <item path="src/display.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="src/io.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/io.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/kernel.c" ex="false" tool="0" flavor2="2">
+      </item>
+      <item path="src/string.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/string.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>

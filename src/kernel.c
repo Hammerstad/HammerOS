@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "display.h"
+#include "string.h"
 
 /* Check if the compiler thinks if we are targeting the wrong operating system. */
 #if defined(__linux__)
@@ -70,5 +71,6 @@ void kernel_main()
 	terminal_writestring("KHello, kernel World!\n");
 	terminal_setcolor(11);
 	terminal_writestring("LHello, kernel World!\n");
-	terminal_setcolor(12);
+	//terminal_setcolor(12);
+        terminal_writestring((const char *)strlen("heisann alle sammen, hvordan går det?"));
 }

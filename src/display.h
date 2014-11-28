@@ -1,10 +1,3 @@
-/* 
- * File:   display.h
- * Author: Eirik Mildestveit Hammerstad
- *
- * Created on October 13, 2014, 12:31 PM
- */
-
 #ifndef DISPLAY_H
 #define	DISPLAY_H
 #include <stddef.h>
