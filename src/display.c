@@ -13,7 +13,7 @@ uint16_t make_vgaentry(char c, uint8_t color) {
 }
 
 static const size_t VGA_WIDTH = 80;
-static const size_t VGA_HEIGHT = 24;
+static const size_t VGA_HEIGHT = 25;
 
 size_t cursor_y;
 size_t cursor_x;
@@ -59,7 +59,7 @@ void move_cursor(void) {
 }
 
 void terminal_scroll() {
-    if (cursor_y < 24) {
+    if (cursor_y < VGA_HEIGHT) {
         return;
     }
     // Move all characters up one row

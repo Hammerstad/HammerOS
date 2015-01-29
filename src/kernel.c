@@ -43,23 +43,23 @@ void kernel_main()
 	terminal_setcolor(12);
 
 
+	terminal_writestring("AHello, kernel World!\n");
+	terminal_writestring("BHello, kernel World!\n");
+	terminal_writestring("CHello, kernel World!\n");
+	terminal_writestring("DHello, kernel World!\n");
+	terminal_writestring("EHello, kernel World!\n");
+	terminal_writestring("FAJAHello, kernel World!\n");
+	terminal_writestring("GHello, kernel World!\n");
 	terminal_writestring("HHello, kernel World!\n");
 	terminal_writestring("IHello, kernel World!\n");
-	terminal_writestring("JHello, kernel World!\n");
-	terminal_writestring("KHello, kernel World!\n");
-	terminal_writestring("KHello, kernel World!\n");
-	terminal_writestring("JAJAHello, kernel World!\n");
-	terminal_writestring("KHello, kernel World!\n");
-	terminal_writestring("KHello, kernel World!\n");
-	terminal_writestring("KHello, kernel World!\n");
 	terminal_setcolor(5);
-	terminal_writestring("A LINE!\n");
-	terminal_writestring("TEST!\n");
+	terminal_writestring("J LINE!\n");
+	terminal_writestring("KEST!\n");
 	terminal_writestring("LOREM!\n");
-	terminal_writestring("IPSUM!\n");
-	terminal_writestring("BSDHello, kernel World!\n");
-	terminal_writestring("KHello, kernel World!\n");
+	terminal_writestring("MPSUM!\n");
+	terminal_writestring("NSDHello, kernel World!\n");
+	terminal_writestring("OHello, kernel World!\n");
 	terminal_setcolor(10);
-	terminal_writestring("WEEE!\n");
-	terminal_writestring("JAAA!\n");
+	terminal_writestring("PEEE!\n");
+	terminal_writestring("QAAA!\n");
 }
