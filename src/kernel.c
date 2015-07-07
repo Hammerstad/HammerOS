@@ -20,5 +20,5 @@ void kernel_main()
 {
 	terminal_initialize();
 	terminal_putlogo();
-	terminal_putchar("\n");
+	terminal_writestring("\n");
 }
