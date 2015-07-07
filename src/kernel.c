@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include "display.h"
 #include "string.h"
+#include "util.h"
 
 /* Check if the compiler thinks if we are targeting the wrong operating system. */
 #if defined(__linux__)
@@ -14,52 +15,10 @@
 #if defined(__cplusplus)
 extern "C" /* Use C linkage for kernel_main. */
 #endif
+
 void kernel_main()
 {
 	terminal_initialize();
-	terminal_writestring("AHello, kernel World!\n");
-	terminal_setcolor(1);
-	terminal_writestring("BHello, kernel World!\n");
-	terminal_setcolor(2);
-	terminal_writestring("CHello, kernel World!\n");
-	terminal_setcolor(3);
-	terminal_writestring("DHello, kernel World!\n");
-	terminal_setcolor(4);
-	terminal_writestring("EHello, kernel World!\n");
-	terminal_setcolor(5);
-	terminal_writestring("FHello, kernel World!\n");
-	terminal_setcolor(6);
-	terminal_writestring("GHello, kernel World!\n");
-	terminal_setcolor(7);
-	terminal_writestring("HHello, kernel World!\n");
-	terminal_setcolor(8);
-	terminal_writestring("IHello, kernel World!\n");
-	terminal_setcolor(9);
-	terminal_writestring("JHello, kernel World!\n");
-	terminal_setcolor(10);
-	terminal_writestring("KHello, kernel World!\n");
-	terminal_setcolor(11);
-	terminal_writestring("LHello, kernel World!\n");
-	terminal_setcolor(12);
-
-
-	terminal_writestring("AHello, kernel World!\n");
-	terminal_writestring("BHello, kernel World!\n");
-	terminal_writestring("CHello, kernel World!\n");
-	terminal_writestring("DHello, kernel World!\n");
-	terminal_writestring("EHello, kernel World!\n");
-	terminal_writestring("FAJAHello, kernel World!\n");
-	terminal_writestring("GHello, kernel World!\n");
-	terminal_writestring("HHello, kernel World!\n");
-	terminal_writestring("IHello, kernel World!\n");
-	terminal_setcolor(5);
-	terminal_writestring("J LINE!\n");
-	terminal_writestring("KEST!\n");
-	terminal_writestring("LOREM!\n");
-	terminal_writestring("MPSUM!\n");
-	terminal_writestring("NSDHello, kernel World!\n");
-	terminal_writestring("OHello, kernel World!\n");
-	terminal_setcolor(10);
-	terminal_writestring("PEEE!\n");
-	terminal_writestring("QAAA!\n");
+	terminal_putlogo();
+	terminal_putchar("\n");
 }

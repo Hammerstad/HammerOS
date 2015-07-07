@@ -107,3 +107,12 @@ void terminal_writestring(const char* data) {
         terminal_putchar(data[i]);
     }
 }
+
+void terminal_putlogo(){
+    terminal_writestring("  _    _                                      ____   _____ \n");
+    terminal_writestring(" | |  | |                                    / __ \\ / ____|\n");
+    terminal_writestring(" | |__| | __ _ _ __ ___  _ __ ___   ___ _ __| |  | | (___  \n");
+    terminal_writestring(" |  __  |/ _` | '_ ` _ \\| '_ ` _ \\ / _ \\ '__| |  | |\\___ \\ \n");
+    terminal_writestring(" | |  | | (_| | | | | | | | | | | |  __/ |  | |__| |____) |\n");
+    terminal_writestring(" |_|  |_|\\__,_|_| |_| |_|_| |_| |_|\\___|_|   \\____/|_____/ \n");
+}
