@@ -22,7 +22,7 @@ void init_gdt()
     gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF); // Kernel data segment
     
     gdt_flush((uint32_t)&gdt_ptr);
-    terminal_writestring("DONE");
+    terminal_writestring("DONE\n");
 }
 
 // Set the value of one GDT entry.
