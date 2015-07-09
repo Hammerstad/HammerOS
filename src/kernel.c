@@ -1,11 +1,8 @@
 #if !defined(__cplusplus)
 #include <stdbool.h> /* C doesn't have booleans by default. */
 #endif
-#include <stddef.h>
-#include <stdint.h>
 #include "display.h"
-#include "string.h"
-#include "util.h"
+#include "gdt.h"
 
 /* Check if the compiler thinks if we are targeting the wrong operating system. */
 #if defined(__linux__)
@@ -21,4 +18,6 @@ void kernel_main()
 	terminal_initialize();
 	terminal_putlogo();
 	terminal_writestring("\n");
+	
+	init_gdt();
 }
