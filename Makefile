@@ -1,45 +1,58 @@
 BASEDIR = $(shell echo $(CURDIR)|sed 's/ /\\ /g')
-CROSSDIR = /usr/local/cross/ia32/
+BINDIR=bin
+OBJDIR=obj
+WORKDIR=work
+CROSSDIR = /usr/local/cross/ia32
 CC = $(CROSSDIR)/bin/i686-elf-gcc
 AS = $(CROSSDIR)/bin/i686-elf-as
 
-# Do everything by default if it isn't done already
-all: run
+SOURCES=display.o gdt.o io.o kernel.o string.o util.o boot.o gdt_flush.o 
+OBJECTS = $(addprefix $(OBJDIR)/, $(SOURCES) )
 
-kernel: objfolder
-	$(CC) -c src/kernel.c -o obj/kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
-	$(CC) -c src/display.c -o obj/display.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
-	$(CC) -c src/string.c -o obj/string.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
-	$(CC) -c src/io.c -o obj/io.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
-	$(CC) -c src/util.c -o obj/util.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+CFLAGS=-std=gnu99 -ffreestanding -O2 -Wall -Wextra
+#-nostdlib -nostdinc -fno-builtin -fno-stack-protector
 
-boot: objfolder
-	$(AS) src/boot.s -o obj/boot.o
+help:
+	@echo 'Usage:       - make command'
+	@echo 'help         - shows this help message'
+	@echo 'clean        - deletes bin, obj and work directory'
+	@echo 'compile      - compiles all files to object files'
+	@echo 'iso          - creates an iso image of the kernel'
+	@echo 'link         - links all object files together to a binary'
+	@echo 'run          - runs the kernel, using qemu'
 
-link: kernel boot binfolder
-	$(CC) -T src/linker.ld -o bin/hammeros.bin -ffreestanding -O2 -nostdlib obj/boot.o obj/kernel.o obj/string.o obj/io.o obj/display.o obj/util.o -lgcc
-
-iso: link workfolder bin
-	cp bin/hammeros.bin work/boot/hammeros.bin
-	cp grub.cfg work/boot/grub/grub.cfg
-	grub-mkrescue -o bin/hammeros.iso work
-
-run: link
-	qemu-system-i386 -kernel bin/hammeros.bin
-	
 clean:
-	if [ -e obj ]; then rm -r obj; fi
-	if [ -e work ]; then rm -r work; fi
+	if [ -e $(OBJDIR) ]; then rm -r $(OBJDIR); fi
+	if [ -e $(BINDIR) ]; then rm -r $(BINDIR); fi
+	if [ -e $(WORKDIR) ]; then rm -r $(WORKDIR); fi
 
-purge: clean
-	if [ -e bin ]; then rm -r bin; fi
+compile: $(OBJDIR) $(OBJECTS)
 
-#
-# Create directories if they don't exist already
-#
-objfolder:
-	mkdir -p obj
-binfolder:
-	mkdir -p bin
-workfolder:
-	mkdir -p work/boot/grub
+iso: compile link
+	cp $(BINDIR)/hammeros.bin $(WORKDIR)/boot/hammeros.bin
+	cp grub.cfg $(WORKDIR)/boot/grub/grub.cfg
+	grub-mkrescue -o $(BINDIR)/hammeros.iso $(WORKDIR)
+	
+link: $(BINDIR)
+	# ld $(LDFLAGS) -o kernel $(SOURCES)
+	$(CC) -T src/linker.ld -o $(BINDIR)/hammeros.bin -ffreestanding -O2 -nostdlib $(OBJECTS) -lgcc
+
+run: compile link
+	qemu-system-i386 -kernel $(BINDIR)/hammeros.bin
+
+$(OBJDIR)/%.o: src/%.s
+	echo $@
+	$(AS) $< -o $@
+	
+$(OBJDIR)/%.o: src/%.c
+	echo $@
+	$(CC) -c -o $@ $(CFLAGS) $<
+
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
+	
+$(BINDIR):
+	mkdir -p $(BINDIR)
+	
+$(WORKDIR):
+	mkdir -p $(WORKDIR)/boot/grub
