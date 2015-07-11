@@ -2,7 +2,7 @@
 
 gdt_flush:
    mov 4(%esp), %eax    # Get the pointer to the GDT, passed as a parameter.
-   lgdt (%eax)           # Load the new GDT pointer
+   lgdt (%eax)          # Load the new GDT pointer
 
    mov $0x10, %ax       # 0x10 is the offset in the GDT to our data segment
    mov %ax, %ds         # Load all data segment selectors
