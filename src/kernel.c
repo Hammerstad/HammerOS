@@ -3,6 +3,7 @@
 #endif
 #include "display.h"
 #include "gdt.h"
+#include "idt.h"
 
 /* Check if the compiler thinks if we are targeting the wrong operating system. */
 #if defined(__linux__)
@@ -20,4 +21,8 @@ void kernel_main()
 	terminal_writestring("\n");
 	
 	init_gdt();
+	init_idt();
+	
+	asm volatile ("int $0x3");
+	asm volatile ("int $0x4");
 }

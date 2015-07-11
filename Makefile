@@ -6,7 +6,7 @@ CROSSDIR = /usr/local/cross/ia32
 CC = $(CROSSDIR)/bin/i686-elf-gcc
 AS = $(CROSSDIR)/bin/i686-elf-as
 
-SOURCES=display.o gdt.o io.o kernel.o string.o util.o boot.o gdt_flush.o 
+SOURCES=display.o gdt.o io.o kernel.o string.o util.o boot.o gdt_flush.o idt.o idt_flush.o isr.o
 OBJECTS = $(addprefix $(OBJDIR)/, $(SOURCES) )
 
 CFLAGS=-std=gnu99 -ffreestanding -O2 -Wall -Wextra
@@ -41,11 +41,9 @@ run: compile link
 	qemu-system-i386 -kernel $(BINDIR)/hammeros.bin
 
 $(OBJDIR)/%.o: src/%.s
-	echo $@
 	$(AS) $< -o $@
 	
 $(OBJDIR)/%.o: src/%.c
-	echo $@
 	$(CC) -c -o $@ $(CFLAGS) $<
 
 $(OBJDIR):
