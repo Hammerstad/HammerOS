@@ -5,6 +5,7 @@
 #include "util.h"
 
 static void idt_set_gate(uint8_t,uint32_t,uint16_t,uint8_t);
+void debug_register(registers_t regs);
 extern void idt_flush(uint32_t);
 
 idt_entry_t idt_entries[256];
@@ -70,71 +71,52 @@ static void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags
 // This gets called from our ASM interrupt handler stub.
 void isr_handler(uint32_t eax, registers_t regs)
 {
-    /*
-        u32int ds;                  // Data segment selector
-        u32int edi, esi, ebp, esp, ebx, edx, ecx, eax; // Pushed by pusha.
-        u32int int_no, err_code;    // Interrupt number and error code (if applicable)
-        u32int eip, cs, eflags, useresp, ss; // Pushed by the processor automatically.
-   */
-   terminal_writestring("INTERRUPT RECEIVED:\n");
-   terminal_writestring("Interrupt number: ");
-   terminal_writedec(regs.int_no);
-   terminal_writestring("\nInterrupt error code: ");
-   terminal_writedec(regs.err_code);
-   
-   terminal_writestring("\nEDI:");
-   terminal_writedec(regs.edi);
-   terminal_writestring(" ESI:");
-   terminal_writedec(regs.esi);
-   terminal_writestring(" EBP:");
-   terminal_writedec(regs.ebp);
-   terminal_writestring(" ESP:");
-   terminal_writedec(regs.esp);
-   terminal_writestring(" EAX:");
-   terminal_writedec(regs.eax);
-   terminal_writestring(" EBX:");
-   terminal_writedec(regs.ebx);
-   terminal_writestring(" ECX:");
-   terminal_writedec(regs.ecx);
-   terminal_writestring(" EDX:");
-   terminal_writedec(regs.edx);
-   
-   terminal_writestring("\nDS:");
-   terminal_writedec(regs.ds);
-   terminal_writestring(" ES:");
-   terminal_writedec(regs.es);
-   terminal_writestring(" FS:");
-   terminal_writedec(regs.fs);
-   terminal_writestring(" GS:");
-   terminal_writedec(regs.gs);
-   
-   terminal_writestring("\nEIP:");
-   terminal_writedec(regs.eip);
-   terminal_writestring(" CS:");
-   terminal_writedec(regs.cs);
-   terminal_writestring(" EFLAGS:");
-   terminal_writedec(regs.eflags);
-   terminal_writestring(" USERESP:");
-   terminal_writedec(regs.useresp);
-   terminal_writestring(" SS:");
-   terminal_writedec(regs.ss);
-   
-   terminal_writestring("\n");
+   debug_register(regs);
 }
-void isr_handler2(uint32_t arg1,uint32_t arg2,uint32_t arg3,uint32_t arg4,uint32_t arg5)
-{
-    terminal_writedec(arg1);
-    terminal_writestring("\n");
-    terminal_writedec(arg2);
-    terminal_writestring("\n");
-    terminal_writedec(arg3);
-    terminal_writestring("\n");
-    terminal_writedec(arg4);
-    terminal_writestring("\n");
-    terminal_writedec(arg5);
-    terminal_writestring("\n");
-}
-void write_register(uint32_t regval){
-    terminal_writedec(regval);
+
+void debug_register(registers_t regs){
+    terminal_writestring("INTERRUPT RECEIVED:\n");
+    terminal_writestring("Interrupt number: ");
+    terminal_writedec(regs.int_no);
+    terminal_writestring("\nInterrupt error code: ");
+    terminal_writedec(regs.err_code);
+    
+    terminal_writestring("\nEDI:");
+    terminal_writedec(regs.edi);
+    terminal_writestring(" ESI:");
+    terminal_writedec(regs.esi);
+    terminal_writestring(" EBP:");
+    terminal_writedec(regs.ebp);
+    terminal_writestring(" ESP:");
+    terminal_writedec(regs.esp);
+    terminal_writestring(" EAX:");
+    terminal_writedec(regs.eax);
+    terminal_writestring(" EBX:");
+    terminal_writedec(regs.ebx);
+    terminal_writestring(" ECX:");
+    terminal_writedec(regs.ecx);
+    terminal_writestring(" EDX:");
+    terminal_writedec(regs.edx);
+    
+    terminal_writestring("\nDS:");
+    terminal_writedec(regs.ds);
+    terminal_writestring(" ES:");
+    terminal_writedec(regs.es);
+    terminal_writestring(" FS:");
+    terminal_writedec(regs.fs);
+    terminal_writestring(" GS:");
+    terminal_writedec(regs.gs);
+    
+    terminal_writestring("\nEIP:");
+    terminal_writedec(regs.eip);
+    terminal_writestring(" CS:");
+    terminal_writedec(regs.cs);
+    terminal_writestring(" EFLAGS:");
+    terminal_writedec(regs.eflags);
+    terminal_writestring(" USERESP:");
+    terminal_writedec(regs.useresp);
+    terminal_writestring(" SS:");
+    terminal_writedec(regs.ss);
+    
     terminal_writestring("\n");
 }

@@ -7,15 +7,11 @@
     jmp isr_common_stub
 .endm
 
-.extern write_register
-
 .macro ISR_ERRCODE arg
   .global isr\arg 
   isr\arg:
     cli
     push $\arg
-    call write_register
-    jmp .HANG
     jmp isr_common_stub
 .endm
 
@@ -53,7 +49,6 @@ ISR_NOERRCODE 30
 ISR_NOERRCODE 31
 
 .extern isr_handler
-.extern write_register
 
 # This is our common ISR stub. It saves the processor state, sets
 # up for kernel mode segments, calls the C-level fault handler,
@@ -84,7 +79,4 @@ isr_common_stub:
     popa
     addl $0x8, %esp
     sti
-    iret    
-
-.HANG:
-  jmp .HANG
+    iret
