@@ -34,5 +34,6 @@ void terminal_scroll();
 void terminal_putchar(char c);
 void terminal_writestring(const char* data);
 void move_cursor(void);
+void terminal_writedec(uint32_t n);
 #endif	/* DISPLAY_H */
 
