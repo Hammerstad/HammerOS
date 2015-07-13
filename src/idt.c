@@ -68,9 +68,52 @@ static void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags
     idt_entries[num].flags   = flags /* | 0x60 */;
 }
 
+const char *exception_messages[] = 
+{
+    "Division By Zero", // 0
+    "Debug",
+    "Non Maskable Interrupt",
+    "Breakpoint",
+    "Into Detected Overflow",
+    "Out of Bounds", // 5
+    "Invalid Opcode",
+    "No Coprocessor",
+    "Double Fault",
+    "Coprocessor Segment",
+    "Bad TSS", // 10
+    "Segment Not Present",
+    "Stack Fault",
+    "General Protection",
+    "Page Fault",
+    "Unknown Interrupt", // 15
+    "Coprocessor Fault",
+    "Alignment Check",
+    "Machine Check", // 18
+    
+    "Reserved", // 19
+    "Reserved", // 20
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved", // 25
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved", // 30
+    "Reserved"  // 31
+};
+
 void isr_handler(registers_t regs)
 {
-   debug_register(regs);
+    if (regs.int_no < 32)
+    {
+        terminal_writestring(exception_messages[regs.int_no]);
+        terminal_writestring(" Exception. System Halted!\n");
+        for (;;);
+        debug_register(regs);
+    }
 }
 
 void debug_register(registers_t regs){
