@@ -54,14 +54,13 @@ ISR_NOERRCODE 31
 # up for kernel mode segments, calls the C-level fault handler,
 # and finally restores the stack frame.
 isr_common_stub:
-    pusha
     push %ds
     push %es
     push %fs
     push %gs
     
     mov %ds, %ax
-    push %eax 
+    pusha
     mov $0x10, %ax
     mov %ax, %ds
     mov %ax, %es
@@ -69,14 +68,13 @@ isr_common_stub:
     mov %ax, %gs
     
     call isr_handler
+    popa
     
-    pop %eax  
     pop %gs
     pop %fs
     pop %es
     pop %ds
     
-    popa
     addl $0x8, %esp
     sti
     iret

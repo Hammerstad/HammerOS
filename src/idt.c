@@ -68,8 +68,7 @@ static void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags
     idt_entries[num].flags   = flags /* | 0x60 */;
 }
 
-// This gets called from our ASM interrupt handler stub.
-void isr_handler(uint32_t eax, registers_t regs)
+void isr_handler(registers_t regs)
 {
    debug_register(regs);
 }
