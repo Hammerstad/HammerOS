@@ -3,7 +3,7 @@
 #endif
 #include "display.h"
 #include "gdt.h"
-#include "idt.h"
+#include "interrupts/idt.h"
 
 /* Check if the compiler thinks if we are targeting the wrong operating system. */
 #if defined(__linux__)
