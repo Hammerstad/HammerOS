@@ -1,14 +1,14 @@
-export BASEDIR = $(shell echo $(CURDIR)|sed 's/ /\\ /g')
+BASEDIR = $(shell echo $(CURDIR)|sed 's/ /\\ /g')
 BINDIR=$(BASEDIR)/bin
 SRCDIR=$(BASEDIR)/src
 WORKDIR=$(BASEDIR)/work
 CROSSDIR = /usr/local/cross/ia32
-export CC = $(CROSSDIR)/bin/i686-elf-gcc
-export AS = $(CROSSDIR)/bin/i686-elf-as
+CC = $(CROSSDIR)/bin/i686-elf-gcc
+AS = $(CROSSDIR)/bin/i686-elf-as
 
-export CFLAGS=-std=gnu99 -ffreestanding -O2 -Wall -Wextra
+CFLAGS=-std=gnu99 -ffreestanding -O2 -Wall -Wextra  -fno-builtin -fno-stack-protector -nostdlib
+#-nostdinc
 INCLUDEDIRS = $(SRCDIR)
-#-nostdlib -nostdinc -fno-builtin -fno-stack-protector
 
 ASSEMBLIES_ABS = $(shell find $(SRCDIR) -name '*.s')
 SOURCES_ABS = $(shell find $(SRCDIR) -name '*.c')
