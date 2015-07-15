@@ -2,11 +2,15 @@
 
 #include "display.h"
 #include "idt.h"
+#include "io.h"
 #include "util.h"
 
 static void idt_set_gate(uint8_t,uint32_t,uint16_t,uint8_t);
-void debug_register(registers_t regs);
 extern void idt_flush(uint32_t);
+
+void set_idt_gates();
+void remap_pic();
+void debug_register(registers_t regs);
 
 idt_entry_t idt_entries[256];
 idt_ptr_t   idt_ptr;
@@ -19,6 +23,15 @@ void init_idt()
     
     memset(&idt_entries, 0, sizeof(idt_entry_t)*256);
     
+    
+    set_idt_gates();
+    remap_pic();
+    
+    idt_flush((uint32_t)&idt_ptr);
+    terminal_writestring("DONE\n");
+}
+
+void set_idt_gates(){
     idt_set_gate( 0, (uint32_t)isr0 , 0x08, 0x8E);
     idt_set_gate( 1, (uint32_t)isr1 , 0x08, 0x8E);
     idt_set_gate( 2, (uint32_t)isr2 , 0x08, 0x8E);
@@ -51,9 +64,36 @@ void init_idt()
     idt_set_gate(29, (uint32_t)isr29 , 0x08, 0x8E);
     idt_set_gate(30, (uint32_t)isr30 , 0x08, 0x8E);
     idt_set_gate(31, (uint32_t)isr31 , 0x08, 0x8E);
+}
+
+void remap_pic(){
+    /*outportb(0x20, 0x11);
+    outportb(0xA0, 0x11);
+    outportb(0x21, 0x20);
+    outportb(0xA1, 0x28);
+    outportb(0x21, 0x04);
+    outportb(0xA1, 0x02);
+    outportb(0x21, 0x01);
+    outportb(0xA1, 0x01);
+    outportb(0x21, 0x0);
+    outportb(0xA1, 0x0);
     
-    idt_flush((uint32_t)&idt_ptr);
-    terminal_writestring("DONE\n");
+    idt_set_gate(32, (u32int)irq0,  0x08, 0x8E);
+    idt_set_gate(33, (u32int)irq1,  0x08, 0x8E);
+    idt_set_gate(34, (u32int)irq2,  0x08, 0x8E);
+    idt_set_gate(35, (u32int)irq3,  0x08, 0x8E);
+    idt_set_gate(36, (u32int)irq4,  0x08, 0x8E);
+    idt_set_gate(37, (u32int)irq5,  0x08, 0x8E);
+    idt_set_gate(38, (u32int)irq6,  0x08, 0x8E);
+    idt_set_gate(39, (u32int)irq7,  0x08, 0x8E);
+    idt_set_gate(40, (u32int)irq8,  0x08, 0x8E);
+    idt_set_gate(41, (u32int)irq9,  0x08, 0x8E);
+    idt_set_gate(42, (u32int)irq10, 0x08, 0x8E);
+    idt_set_gate(43, (u32int)irq11, 0x08, 0x8E);
+    idt_set_gate(44, (u32int)irq12, 0x08, 0x8E);
+    idt_set_gate(45, (u32int)irq13, 0x08, 0x8E);
+    idt_set_gate(46, (u32int)irq14, 0x08, 0x8E);
+    idt_set_gate(47, (u32int)irq15, 0x08, 0x8E);*/
 }
 
 static void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags)
