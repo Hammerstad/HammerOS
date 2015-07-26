@@ -1,16 +1,14 @@
-#include <stdint.h>
-
 #include "display.h"
 #include "idt.h"
 #include "io.h"
 #include "util.h"
+#include <stdint.h>
 
 static void idt_set_gate(uint8_t,uint32_t,uint16_t,uint8_t);
 extern void idt_flush(uint32_t);
 
 void set_idt_gates();
 void remap_pic();
-void debug_register(registers_t regs);
 
 idt_entry_t idt_entries[256];
 idt_ptr_t   idt_ptr;
@@ -67,7 +65,7 @@ void set_idt_gates(){
 }
 
 void remap_pic(){
-    /*outportb(0x20, 0x11);
+    outportb(0x20, 0x11);
     outportb(0xA0, 0x11);
     outportb(0x21, 0x20);
     outportb(0xA1, 0x28);
@@ -78,22 +76,22 @@ void remap_pic(){
     outportb(0x21, 0x0);
     outportb(0xA1, 0x0);
     
-    idt_set_gate(32, (u32int)irq0,  0x08, 0x8E);
-    idt_set_gate(33, (u32int)irq1,  0x08, 0x8E);
-    idt_set_gate(34, (u32int)irq2,  0x08, 0x8E);
-    idt_set_gate(35, (u32int)irq3,  0x08, 0x8E);
-    idt_set_gate(36, (u32int)irq4,  0x08, 0x8E);
-    idt_set_gate(37, (u32int)irq5,  0x08, 0x8E);
-    idt_set_gate(38, (u32int)irq6,  0x08, 0x8E);
-    idt_set_gate(39, (u32int)irq7,  0x08, 0x8E);
-    idt_set_gate(40, (u32int)irq8,  0x08, 0x8E);
-    idt_set_gate(41, (u32int)irq9,  0x08, 0x8E);
-    idt_set_gate(42, (u32int)irq10, 0x08, 0x8E);
-    idt_set_gate(43, (u32int)irq11, 0x08, 0x8E);
-    idt_set_gate(44, (u32int)irq12, 0x08, 0x8E);
-    idt_set_gate(45, (u32int)irq13, 0x08, 0x8E);
-    idt_set_gate(46, (u32int)irq14, 0x08, 0x8E);
-    idt_set_gate(47, (u32int)irq15, 0x08, 0x8E);*/
+    idt_set_gate(32, (uint32_t)irq0,  0x08, 0x8E);
+    idt_set_gate(33, (uint32_t)irq1,  0x08, 0x8E);
+    idt_set_gate(34, (uint32_t)irq2,  0x08, 0x8E);
+    idt_set_gate(35, (uint32_t)irq3,  0x08, 0x8E);
+    idt_set_gate(36, (uint32_t)irq4,  0x08, 0x8E);
+    idt_set_gate(37, (uint32_t)irq5,  0x08, 0x8E);
+    idt_set_gate(38, (uint32_t)irq6,  0x08, 0x8E);
+    idt_set_gate(39, (uint32_t)irq7,  0x08, 0x8E);
+    idt_set_gate(40, (uint32_t)irq8,  0x08, 0x8E);
+    idt_set_gate(41, (uint32_t)irq9,  0x08, 0x8E);
+    idt_set_gate(42, (uint32_t)irq10, 0x08, 0x8E);
+    idt_set_gate(43, (uint32_t)irq11, 0x08, 0x8E);
+    idt_set_gate(44, (uint32_t)irq12, 0x08, 0x8E);
+    idt_set_gate(45, (uint32_t)irq13, 0x08, 0x8E);
+    idt_set_gate(46, (uint32_t)irq14, 0x08, 0x8E);
+    idt_set_gate(47, (uint32_t)irq15, 0x08, 0x8E);
 }
 
 static void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags)
@@ -106,99 +104,4 @@ static void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags
     // We must uncomment the OR below when we get to using user-mode.
     // It sets the interrupt gate's privilege level to 3.
     idt_entries[num].flags   = flags /* | 0x60 */;
-}
-
-const char *exception_messages[] = 
-{
-    "Division By Zero", // 0
-    "Debug",
-    "Non Maskable Interrupt",
-    "Breakpoint",
-    "Into Detected Overflow",
-    "Out of Bounds", // 5
-    "Invalid Opcode",
-    "No Coprocessor",
-    "Double Fault",
-    "Coprocessor Segment",
-    "Bad TSS", // 10
-    "Segment Not Present",
-    "Stack Fault",
-    "General Protection",
-    "Page Fault",
-    "Unknown Interrupt", // 15
-    "Coprocessor Fault",
-    "Alignment Check",
-    "Machine Check", // 18
-    
-    "Reserved", // 19
-    "Reserved", // 20
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved", // 25
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved", // 30
-    "Reserved"  // 31
-};
-
-void isr_handler(registers_t regs)
-{
-    if (regs.int_no < 32)
-    {
-        terminal_writestring(exception_messages[regs.int_no]);
-        terminal_writestring(" Exception. System Halted!\n");
-        for (;;);
-        debug_register(regs);
-    }
-}
-
-void debug_register(registers_t regs){
-    terminal_writestring("INTERRUPT RECEIVED:\n");
-    terminal_writestring("Interrupt number: ");
-    terminal_writedec(regs.int_no);
-    terminal_writestring("\nInterrupt error code: ");
-    terminal_writedec(regs.err_code);
-    
-    terminal_writestring("\nEDI:");
-    terminal_writedec(regs.edi);
-    terminal_writestring(" ESI:");
-    terminal_writedec(regs.esi);
-    terminal_writestring(" EBP:");
-    terminal_writedec(regs.ebp);
-    terminal_writestring(" ESP:");
-    terminal_writedec(regs.esp);
-    terminal_writestring(" EAX:");
-    terminal_writedec(regs.eax);
-    terminal_writestring(" EBX:");
-    terminal_writedec(regs.ebx);
-    terminal_writestring(" ECX:");
-    terminal_writedec(regs.ecx);
-    terminal_writestring(" EDX:");
-    terminal_writedec(regs.edx);
-    
-    terminal_writestring("\nDS:");
-    terminal_writedec(regs.ds);
-    terminal_writestring(" ES:");
-    terminal_writedec(regs.es);
-    terminal_writestring(" FS:");
-    terminal_writedec(regs.fs);
-    terminal_writestring(" GS:");
-    terminal_writedec(regs.gs);
-    
-    terminal_writestring("\nEIP:");
-    terminal_writedec(regs.eip);
-    terminal_writestring(" CS:");
-    terminal_writedec(regs.cs);
-    terminal_writestring(" EFLAGS:");
-    terminal_writedec(regs.eflags);
-    terminal_writestring(" USERESP:");
-    terminal_writedec(regs.useresp);
-    terminal_writestring(" SS:");
-    terminal_writedec(regs.ss);
-    
-    terminal_writestring("\n");
 }
