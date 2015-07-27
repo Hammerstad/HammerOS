@@ -4,6 +4,7 @@
 #include "display.h"
 #include "gdt.h"
 #include "interrupts/idt.h"
+#include "keyboard.h"
 #include "timer.h"
 
 /* Check if the compiler thinks if we are targeting the wrong operating system. */
@@ -23,9 +24,10 @@ void kernel_main()
 	
 	init_gdt();
 	init_idt();
+	init_keyboard();
 	
 	// Allow interrupts
 	asm volatile ("sti");
 	
-	init_timer(50);
+	//init_timer(50);
 }
