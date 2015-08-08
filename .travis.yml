@@ -1,7 +1,7 @@
 language: c
 compiler: gcc
 install:
-          - sudo apt-get install gcc make bison flex libgmp3-dev libmpfr-dev libmpc-dev texinfo qemu-system-i386 g++ -y
+          - sudo apt-get install gcc make bison flex libgmp3-dev libmpfr-dev libmpc-dev texinfo g++ -y
           - sudo bash tools/toolchain.sh ia32
 script:
           - make iso
