@@ -42,7 +42,7 @@ compile: $(TARGETS)
 %.o: %.c
 	$(CC) -c -o $@ $(CFLAGS) $< -I $(INCLUDEDIRS)
 
-iso: compile link
+iso: $(WORKDIR) compile link
 	cp $(BINDIR)/hammeros.bin $(WORKDIR)/boot/hammeros.bin
 	cp grub.cfg $(WORKDIR)/boot/grub/grub.cfg
 	grub-mkrescue -o $(BINDIR)/hammeros.iso $(WORKDIR)
