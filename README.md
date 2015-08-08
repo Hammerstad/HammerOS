@@ -10,20 +10,20 @@ I knew little to no C/assembly before starting this project (and I still do).
  - [JamesM's kernel development tutorials](http://www.jamesmolloy.co.uk/tutorial_html)
  - [Modern Operating Systems](http://www.amazon.com/Modern-Operating-Systems-3rd-Edition/dp/0136006639)
  
- ## Usage
+## Usage
  
- I use the makefile for most use cases, with the exception of building a cross compiler. You have to do that first.
+I use the makefile for most use cases, with the exception of building a cross compiler. You have to do that first.
  
- ### Cross compiler 
+### Cross compiler 
  
- For usage of the toolchain.sh which builds the cross compiler, type:
+For usage of the toolchain.sh which builds the cross compiler, type:
  
     sh tools/toolchain.sh
 	
 In order to build a cross compiler for x86/ia32 architecture type:
 
     # Install required programs with apr-get, such as gcc, bison, yac and qemu
-	# Default installation dir is /usr/local/cross
+    # Default installation dir is /usr/local/cross
 	# You can override this location by setting the CROSS_PREFIX env variable
 	# Remember to alter your makefile accordingly
     sudo bash tools/toolchain.sh install   
