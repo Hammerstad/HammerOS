@@ -197,9 +197,6 @@ unpack_tarball() {
 }
 
 prepare() {
-    show_dependencies
-    install_dependencies
-    
     BINUTILS_SOURCE="ftp://ftp.gnu.org/gnu/binutils/"
     GCC_SOURCE="ftp://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/"
     
