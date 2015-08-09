@@ -1,5 +1,7 @@
 # HammerOS
 
+[![Build Status](https://travis-ci.org/Hammerstad/HammerOS.svg?branch=master)](https://travis-ci.org/Hammerstad/HammerOS)
+
 HammerOS is an operating system for the x86 architecture. 
 I challenged myself to program something way out of my comfort zone, and this is the result. 
 I knew little to no C/assembly before starting this project (and I still do).
