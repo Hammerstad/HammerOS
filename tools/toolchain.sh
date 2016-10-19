@@ -1,6 +1,6 @@
-BINUTILS_VERSION="2.23.1"
+BINUTILS_VERSION="2.27"
 BINUTILS_RELEASE=""
-GCC_VERSION="4.8.1"
+GCC_VERSION="6.2.0"
 
 BASEDIR="`pwd`"
 SRCDIR="$(readlink -f $(dirname "$0"))"
@@ -26,7 +26,7 @@ check_md5() {
     if [ "${SUM}" != "${COMPUTED}" ] ; then
         echo
         echo "Checksum of ${FILE} does not match."
-        
+
         exit 2
     fi
 }
@@ -200,8 +200,8 @@ prepare() {
     BINUTILS_SOURCE="ftp://ftp.gnu.org/gnu/binutils/"
     GCC_SOURCE="ftp://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/"
     
-    download_fetch "${BINUTILS_SOURCE}" "${BINUTILS}" "33adb18c3048d057ac58d07a3f1adb38"
-    download_fetch "${GCC_SOURCE}" "${GCC}" "3b2386c114cd74185aa3754b58a79304"
+    download_fetch "${BINUTILS_SOURCE}" "${BINUTILS}" "2869c9bf3e60ee97c74ac2a6bf4e9d68"
+    download_fetch "${GCC_SOURCE}" "${GCC}" "9768625159663b300ae4de2f4745fcc4"
 }
 
 set_target_from_platform() {
