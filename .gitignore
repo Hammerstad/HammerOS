@@ -2,3 +2,5 @@ tools/
 bin/
 work/
 *.o
+*.tar.bz2
+.vagrant/
