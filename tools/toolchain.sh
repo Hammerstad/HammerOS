@@ -7,7 +7,7 @@ SRCDIR="$(readlink -f $(dirname "$0"))"
 BINUTILS="binutils-${BINUTILS_VERSION}${BINUTILS_RELEASE}.tar.bz2"
 GCC="gcc-${GCC_VERSION}.tar.bz2"
 
-DEPENDENCIES="gcc make bison flex libgmp3-dev libmpfr-dev libmpc-dev texinfo qemu-system-i386 g++"
+DEPENDENCIES="gcc make bison flex libgmp3-dev libmpfr-dev libmpc-dev texinfo qemu-system-i386 g++ grub-common"
 
 check_error() {
     if [ "$1" -ne "0" ]; then

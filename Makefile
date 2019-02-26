@@ -22,12 +22,12 @@ OBJECTS = $(shell find $(SRCDIR) -name '*.o')
 
 help:
 	@echo 'Usage:       - make command'
-	@echo 'help         - shows this help message'
-	@echo 'clean        - deletes bin, obj and work directory'
 	@echo 'compile      - compiles all files to object files'
 	@echo 'iso          - creates an iso image of the kernel'
 	@echo 'link         - links all object files together to a binary'
 	@echo 'run          - runs the kernel, using qemu'
+	@echo 'clean        - deletes bin, obj and work directory'
+	@echo 'help         - shows this help message'
 
 clean:
 	@if [ ! -z "$(OBJECTS)" ]; then rm $(OBJECTS); fi
@@ -43,6 +43,7 @@ compile: $(TARGETS)
 	$(CC) -c -o $@ $(CFLAGS) $< -I $(INCLUDEDIRS)
 
 iso: $(WORKDIR) compile link
+	mkdir -p $(WORKDIR)/boot/grub
 	cp $(BINDIR)/hammeros.bin $(WORKDIR)/boot/hammeros.bin
 	cp grub.cfg $(WORKDIR)/boot/grub/grub.cfg
 	grub-mkrescue -o $(BINDIR)/hammeros.iso $(WORKDIR)
@@ -50,8 +51,9 @@ iso: $(WORKDIR) compile link
 link: $(BINDIR)
 	$(CC) -T $(SRCDIR)/linker.ld -o $(BINDIR)/hammeros.bin -ffreestanding -O2 -nostdlib $(OBJECTS) -lgcc
 
+# Exit alt-2 q <enter>
 run: compile link
-	qemu-system-i386 -kernel $(BINDIR)/hammeros.bin
+	qemu-system-i386 --curses -kernel $(BINDIR)/hammeros.bin
 
 $(BINDIR):
 	mkdir -p $(BINDIR)
